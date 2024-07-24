@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserDto } from 'src/Dto/UserDto';
-import { User } from 'src/Entity/User';
+import { UserDto } from 'src/dto/UserDto';
+import { User } from 'src/entity/User';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
@@ -14,7 +14,16 @@ export class UserService {
   ) {}
 
   async index(): Promise<UserDto[]> {
-    return this.repository.find();
+    return await this.repository.find();
+  }
+
+  async OrderName(): Promise<UserDto[]> {
+    const users = await this.repository.find({
+      order: {
+        username: 'ASC',
+      },
+    });
+    return users;
   }
 
   async store(userDto: UserDto): Promise<UserDto> {
@@ -27,7 +36,21 @@ export class UserService {
     return this.repository.save(user);
   }
 
+  async findById(id: number): Promise<UserDto | undefined> {
+    return await this.repository.findOne({ where: { id } });
+  }
+
   async findOne(username: string): Promise<UserDto | undefined> {
-    return this.repository.findOne({ where: { username } });
+    return await this.repository.findOne({ where: { username } });
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    const user = await this.repository.findOne({ where: { id } });
+    await this.repository.delete(user);
+  }
+
+  async uptadeUser(id: number, userDto: UserDto): Promise<void> {
+    const user = await this.repository.findOne({ where: { id } });
+    await this.repository.update(user, userDto);
   }
 }
