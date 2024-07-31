@@ -11,11 +11,29 @@ export class TeamService {
     private repository: Repository<Team>,
   ) {}
 
-  index(): Promise<TeamDto[]> {
-    return this.repository.find();
+  async index(): Promise<TeamDto[]> {
+    return await this.repository.find();
   }
 
-  store(teamDto: TeamDto): Promise<Team> {
-    return this.repository.save(teamDto);
+  async store(teamDto: TeamDto): Promise<Team> {
+    return await this.repository.save(teamDto);
+  }
+
+  async findOne(TeamName: string): Promise<TeamDto | undefined> {
+    return await this.repository.findOne({ where: { TeamName } });
+  }
+
+  async findById(id: number): Promise<TeamDto | undefined> {
+    return await this.repository.findOne({ where: { id } });
+  }
+
+  async deleteTeam(id: number): Promise<void> {
+    const team = await this.repository.findOne({ where: { id } });
+    await this.repository.delete(team);
+  }
+
+  async uptadeTeam(id: number, teamDto: TeamDto): Promise<void> {
+    const team = await this.repository.findOne({ where: { id } });
+    await this.repository.update(team, teamDto);
   }
 }

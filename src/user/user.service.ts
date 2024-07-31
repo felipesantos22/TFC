@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   private readonly saltRounds = 10;
+
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
