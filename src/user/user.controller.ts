@@ -45,15 +45,19 @@ export class UserController {
 
   @Delete(':id')
   async deleteUser(@Param('id') id: number): Promise<{ message: string }> {
-    const user = this.userService.deleteUser(id);
-    if (user) {
-      throw new HttpException('User not exists', HttpStatus.CONFLICT);
+    const userExists = await this.userService.findById(id);
+    if (!userExists) {
+      throw new HttpException('User not exists', HttpStatus.NOT_FOUND);
     }
+    await this.userService.deleteUser(id);
     return { message: 'User deleted successfully' };
   }
 
   @Put(':id')
-  async updateUser(@Param('id') id: number, @Body() userDto: UserDto): Promise<{ message: string }> {
+  async updateUser(
+    @Param('id') id: number,
+    @Body() userDto: UserDto,
+  ): Promise<{ message: string }> {
     let findUser = await this.userService.findOne(userDto.username);
     if (findUser) {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
